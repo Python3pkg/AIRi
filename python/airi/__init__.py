@@ -28,7 +28,7 @@ class report:
                 fc="call to %s.%s (%s,%s)" % (
                     fn.__module__, fn.__name__,
                     ', '.join( [ repr(a) for a in args ] ),
-                    ', '.join( ["%s = %s" % (a, repr(b)) for a,b in kwargs.items()] )
+                    ', '.join( ["%s = %s" % (a, repr(b)) for a,b in list(kwargs.items())] )
                 )
                 log.msg(fc, level=logging.DEBUG, category=self.category)
             elif self.level >= ENTRY:
@@ -46,14 +46,14 @@ __version__ = ('1', '0', 'c11')
 __version__ = '.'.join(__version__)
 
 try:
-    import camera
-    from camera import dbg, CameraProtocol
-    import settings
-    import twisted_bluetooth
-    import stream
-    import server
-    import api
-except Exception, err:
+    from . import camera
+    from .camera import dbg, CameraProtocol
+    from . import settings
+    from . import twisted_bluetooth
+    from . import stream
+    from . import server
+    from . import api
+except Exception as err:
     log.msg("Failed while importing base modules, ignore if running distutils")
     log.err(err)
 

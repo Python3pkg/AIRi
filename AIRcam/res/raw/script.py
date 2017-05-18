@@ -19,7 +19,7 @@ os.environ["DATA_PATH"]=parent
 try:
   import bluetooth
   import main
-except Exception, err:
+except Exception as err:
   from android import API
   from traceback import format_exc
   API().log(str(err))

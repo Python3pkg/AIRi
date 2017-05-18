@@ -4,7 +4,7 @@ from twisted.python import log
 from twisted.internet import threads, reactor
 from time import time
 import json
-import twisted_bluetooth as bluetooth
+from . import twisted_bluetooth as bluetooth
 import traceback
 from airi.camera.protocol import CameraFactory
 from airi.settings import getSettings
@@ -24,14 +24,14 @@ class ConnectionTest():
         self.request.finish()
 
     def lostConnection(self, reason, failed, address):
-        print "ConnectionTest.lostConnection", address
+        print("ConnectionTest.lostConnection", address)
         self.request.write("<html><h1>ERROR:</h1>\n<pre>%s</pre></html>" % reason)
         self.request.setResponseCode(500, str(failed))
         self.request.finish()
         self.cleanup(address)
 
     def gotFrame(self, frame, address):
-        print "ConnectionTest.gotFrame", address
+        print("ConnectionTest.gotFrame", address)
         cli = CameraFactory.getCamera(address)
         self.request.write(json.dumps(cli))
         self.cleanup(address)
@@ -68,22 +68,22 @@ class ConfigurationManager(Resource):
             request.setResponseCode(500, "invalid address")
             return "Invalid address"
 
-        except Exception, err:
-            print err
+        except Exception as err:
+            print(err)
             CameraFactory.connect(address, 1, "RFCOMM")
             CameraFactory.registerListener(address, ConnectionTest(request))
             return server.NOT_DONE_YET
 
     def render_POST(self, request):
         out = {}
-        print str(request.args)
-        for key, value in request.args.iteritems():
+        print(str(request.args))
+        for key, value in request.args.items():
             if len(value) > 1:
                 out[key] = True
             else:
                 out[key]=value[0]
         settings.setCamera(out)
-        print out
+        print(out)
         settings.save()
         cli = CameraFactory.getConnected(out['address'])
         if cli:
@@ -105,7 +105,7 @@ class doConfiguration(Resource):
             if cli:
                 cli.client.set(option, value)
             return "updated"
-        except Exception, err:
+        except Exception as err:
             return "failed: %s" % err
 
 class ConnectionManager(Resource):
@@ -113,7 +113,7 @@ class ConnectionManager(Resource):
 
     def render_all(self, request):
         out = {}
-        for addr, cli in CameraFactory.getConnected().iteritems():
+        for addr, cli in CameraFactory.getConnected().items():
             out[addr] = CameraFactory.getCamera(addr)
         return out
 
@@ -132,7 +132,7 @@ class ConnectionManager(Resource):
                 return server.NOT_DONE_YET
             else:
                 return json.dumps(self.render_all(request))
-        except Exception, err:
+        except Exception as err:
             request.setHeader('Content-Type', 'text/html')
             request.setHeader('Cache-Control', 'no-cache')
             request.setHeader('Connection', 'close')
@@ -159,7 +159,7 @@ class ScanManager(Resource):
                     for x in cache]
             log.msg(self.scancache)
             remove = []
-            print self.waiting
+            print(self.waiting)
             for request in self.waiting:
                 request.setHeader('Content-Type', 'application/json')
                 request.setHeader('Cache-Control', 'no-cache')
@@ -168,7 +168,7 @@ class ScanManager(Resource):
                 request.finish()
             if len(self.waiting)==0:
                 return server.NOT_DONE_YET
-        except Exception, err:
+        except Exception as err:
             log.err(err)
             error = err
 
@@ -184,7 +184,7 @@ class ScanManager(Resource):
                 request.write("<html><h1>ERROR:</h1>\n")
                 request.write("<pre>%s</pre></html>" % traceback.format_exc())
                 request.finish()
-        except Exception, err:
+        except Exception as err:
             log.err(err)
         self.waiting = []
         self.lastscan = None
@@ -236,7 +236,7 @@ class DisconnectManager(Resource):
                 CameraFactory.disconnect(address)
                 return json.dumps({"result": "Disconnected"})
             return json.dumps({"result": "No Address"})
-        except Exception, err:
+        except Exception as err:
             request.setHeader('Content-Type', 'text/html')
             request.setHeader('Cache-Control', 'no-cache')
             request.setHeader('Connection', 'close')
@@ -258,7 +258,7 @@ class StateManager(Resource):
             else:
                 CameraFactory.connect(address)
                 return json.dumps({"result": "connecting"})
-        except Exception, err:
+        except Exception as err:
             request.setHeader('Content-Type', 'text/html')
             request.setHeader('Cache-Control', 'no-cache')
             request.setHeader('Connection', 'close')
@@ -300,7 +300,7 @@ class UpdateManager(Resource):
                 r.write(json.dumps(args))
                 r.finish()
                 r.delayed.cancel()
-            except Exception, err:
+            except Exception as err:
                 log.err(err)
         klass.reference.clients.pop(address)
 

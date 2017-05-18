@@ -49,7 +49,7 @@ class EventSocket(object):
                     break
                 else:
                     self.bytes += bytesread
-            except socket.error, e:
+            except socket.error as e:
                 if e.args[0] == errno.EWOULDBLOCK:
                     break
                 return main.CONNECTION_LOST

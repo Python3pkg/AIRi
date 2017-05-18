@@ -20,7 +20,7 @@ def ffmpeg_push_thread(fps, pipe, running, buffer_file):
     	    if last_frame:
     		buffer_file.write(last_frame)
 	droid.log("Stopping pushing thread")
-    except Exception, err:
+    except Exception as err:
 	droid.log(str(err))
 
 class ffmpeg(object):

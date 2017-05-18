@@ -5,6 +5,7 @@ from airi.camera import dbg, CameraProtocol
 from airi.settings import getSettings
 from datetime import datetime
 import airi.twisted_bluetooth as bluetooth
+import collections
 
 settings = getSettings()
 
@@ -24,8 +25,8 @@ SIZES = {
 PANS = ["none", "right", "left", "up", "down"]
 
 CAPABILITIES = {
-    'size': [a[0] for a in sorted(SIZES.iteritems(), 
-            key=lambda(x, y):(y, x))],
+    'size': [a[0] for a in sorted(iter(SIZES.items()), 
+            key=lambda x_y:(x_y[1], x_y[0]))],
     'flash': True,
     'pan': PANS,
     'voice': False, # by now ;)
@@ -82,7 +83,7 @@ class AIRi(CameraProtocol):
         if len(self.pending) == 0:
             return
         command, value, timeout = self.pending.pop(0)
-        if callable(value):
+        if isinstance(value, collections.Callable):
             value = value()
         dbg("doCommand $%s%s" % (command, value))
         self.transport.write("$%s%s\n\r" % (command, value))

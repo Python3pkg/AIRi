@@ -88,7 +88,7 @@ class MultiPartStream():
         '''Gets called by oneshot or thumbnail modes''' 
         try:
             self.request.finish()
-        except Exception, err:
+        except Exception as err:
             log.err(err)
         MultiPartStream.clients.remove(self)
 
@@ -100,7 +100,7 @@ class MultiPartStream():
                 self.request.write(content)
                 self.request.write("\n\n")
                 self.finish()
-            except Exception, err:
+            except Exception as err:
                 log.msg("error during sendPart")
                 log.err(err)
         else:
@@ -108,7 +108,7 @@ class MultiPartStream():
                 MULTIPART=MULTIPARTRESPONSE % (MultiPartStream.BOUNDARY, mime, len(content), content)
             try:
                 self.request.write(MULTIPART)
-            except Exception, err:
+            except Exception as err:
                 log.msg("error during sendPart")
                 log.err(err)
 
@@ -160,14 +160,14 @@ class StreamResource(Resource, Listener):
     @report(category=CATEGORY)
     def lostConnection(self, reason, failed, address):
         '''Called when the Bluetooth Link is lost'''
-        print "StreamResource.lostConnection", address
+        print("StreamResource.lostConnection", address)
         clients = StreamResource.getClients(address)
         for c in clients:
             c.sendPart(str(reason))
             if not c.oneshot:
                 try:
                     c.request.finish()
-                except Exception, err:
+                except Exception as err:
                     log.err(err)
             MultiPartStream.clients.remove(c)
         StreamResource.tellClientCount(address)
@@ -189,7 +189,7 @@ class StreamResource(Resource, Listener):
                 method = request.args.get("method", [method,])[-1].upper()
                 try:
                     CameraFactory.connect(address, method=method)
-                except Exception, err:
+                except Exception as err:
                     log.msg("Failed while trying to connect")
                     log.err(err)
         CameraFactory.registerListener(address, self)
@@ -210,7 +210,7 @@ class TestStreamResource(Resource):
         return self.render_GET(request)
 
 if __name__ == '__main__':
-    import webcam
+    from . import webcam
     from twisted.web.server import Site
     import sys
     log.startLogging(sys.stdout)

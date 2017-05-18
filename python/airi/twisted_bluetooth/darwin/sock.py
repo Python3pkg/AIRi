@@ -36,7 +36,7 @@ def isPairingSupported():
 @report(category=CATEGORY)
 def discover_devices (duration=8, flush_cache=True, lookup_names=False):
     out = bluetooth.finddevices(getnames=lookup_names, length=duration)
-    print out
+    print(out)
     return [ (o[0], o[1]) for o in out ]
 
 class BluetoothConnection(tcp.Connection):
@@ -95,13 +95,13 @@ class BluetoothBaseClient(tcp.Connection):
         pid = os.fork()
         if pid == 0:
             # I'm the child
-            print "Child running"
+            print("Child running")
             os.execvp(sys.executable, [sys.executable, "-m", "airi.twisted_bluetooth.darwin.helper",
                 self.listener.address])
             # and we lost it
-            print "OOOOOOOOOOOOOOOOOPPPPPPSSSSSSSS!!!!!!!!!"
+            print("OOOOOOOOOOOOOOOOOPPPPPPSSSSSSSS!!!!!!!!!")
 
-        print "Luke I'm your father"
+        print("Luke I'm your father")
         self.childpid = pid
         s = self.listener.accept()
         return ConnectionWrapper(s)
@@ -109,7 +109,7 @@ class BluetoothBaseClient(tcp.Connection):
     @report(category=CATEGORY)
     def resolveAddress(self):
         self.realAddress = self.addr
-        print "resolveAddress", self.realAddress
+        print("resolveAddress", self.realAddress)
         self.doConnect()
 
     @report(category=CATEGORY)
@@ -238,7 +238,8 @@ class Port(tcp.Port):
         return s
 
     @report(category=CATEGORY)
-    def _buildAddr(self, (host, port)):
+    def _buildAddr(self, xxx_todo_changeme):
+        (host, port) = xxx_todo_changeme
         return (host, port)
 
     @report(category=CATEGORY)
@@ -281,8 +282,8 @@ def connectL2CAP(reactor, *a, **kw):
 def resolve_name(address):
     try:
         return bluetooth.finddevicename(address, True)
-    except Exception, err:
-        print err
+    except Exception as err:
+        print(err)
     return None
 
 

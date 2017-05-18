@@ -2,11 +2,11 @@
 import sys
 
 if sys.platform.startswith("linux"):
-    from bluez import *
+    from .bluez import *
 elif sys.platform.startswith("win"):
-    from win import *
+    from .win import *
 elif sys.platform.startswith("darwin"):
-    from darwin.sock import *
+    from .darwin.sock import *
 else:
-    raise Exception, "Platform not supported"
+    raise Exception("Platform not supported")
 

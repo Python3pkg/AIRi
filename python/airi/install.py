@@ -6,9 +6,9 @@ AIRi install script
 import os, sys, subprocess
 
 def downloadVirtualEnv():
-    print "downloading virtualenv"
-    import urllib2
-    r = urllib2.urlopen("https://raw.github.com/pypa/virtualenv/develop/virtualenv.py")
+    print("downloading virtualenv")
+    import urllib.request, urllib.error, urllib.parse
+    r = urllib.request.urlopen("https://raw.github.com/pypa/virtualenv/develop/virtualenv.py")
     b=r.read()
     r.close()
     A=open("virtualenv.py", "wb")
@@ -40,26 +40,26 @@ def getDefaultInstallationPath():
 
 def getInstallationPath():
     default = getDefaultInstallationPath()
-    r = raw_input("Do you want to install AIRi on %s [Y/n]? " % default)
+    r = input("Do you want to install AIRi on %s [Y/n]? " % default)
     if r.lower().strip().startswith("y") or len(r.strip())==0:
         return default
-    p = raw_input("Please type in install path: ").strip()
+    p = input("Please type in install path: ").strip()
     if len(p) == 0:
         raise RuntimeError("Path can't be empty!")
     return p
 
 def dohelp():
-    print "Usage: %s --path path [install|update|remove]" % sys.argv[0]
+    print("Usage: %s --path path [install|update|remove]" % sys.argv[0])
     sys.exit(0)
 
 def install(bin_):
-    print "Creating virtualenv"
+    print("Creating virtualenv")
     virtualenv.main()
-    print "Installing AIRi with dependencies"
+    print("Installing AIRi with dependencies")
     subprocess.call([os.path.join(bin_, "pip"), "install", "AIRi"])
 
 def upgrade(bin_):
-    print "Upgrading AIRi"
+    print("Upgrading AIRi")
     subprocess.call([os.path.join(bin_, "easy_install"), "-U", "AIRi"])
 
 def main():
@@ -83,10 +83,10 @@ def main():
                 sys.exit(1)
     else:
         if not hasattr(sys, "real_prefix"):
-            print "Need to be called from a virtualenv"
+            print("Need to be called from a virtualenv")
             sys.exit(0)
         path = sys.prefix
-    print "Doing", method, "in", path
+    print("Doing", method, "in", path)
 
     if method=="remove":
         from twisted.python.filepath import FilePath
@@ -99,11 +99,11 @@ def main():
     if method == "install":
         install(bin_)
     if not os.path.isdir(os.path.join(path, bin_)):
-        print "You need to run install first!"
+        print("You need to run install first!")
         sys.exit(1)
     upgrade(bin_)
-    print "Run AIRi:", os.path.join(path, bin_, "AIRi")
-    print "Handle AIRi package:", os.path.join(path, bin_, "AIRi-setup")
+    print("Run AIRi:", os.path.join(path, bin_, "AIRi"))
+    print("Handle AIRi package:", os.path.join(path, bin_, "AIRi-setup"))
 
 if __name__=='__main__':
     main()

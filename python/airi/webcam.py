@@ -22,7 +22,7 @@ def repeat():
         cv.ShowImage("w1", frame)
         c = cv.WaitKey(50)
         if c>-1 and chr(c) =='q':
-            print chr(c)
+            print(chr(c))
             return None
     return cv.EncodeImage(".jpeg", frame, [cv.CV_IMWRITE_JPEG_QUALITY, 50])
 

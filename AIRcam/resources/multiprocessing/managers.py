@@ -18,7 +18,7 @@ import sys
 import weakref
 import threading
 import array
-import Queue
+import queue
 
 from traceback import format_exc
 from multiprocessing import Process, current_process, active_children, Pool, util, connection
@@ -27,7 +27,7 @@ from multiprocessing.forking import exit, Popen, assert_spawning, ForkingPickler
 from multiprocessing.util import Finalize, info
 
 try:
-    from cPickle import PicklingError
+    from pickle import PicklingError
 except ImportError:
     from pickle import PicklingError
 
@@ -185,7 +185,7 @@ class Server(object):
                 msg = ('#RETURN', result)
         try:
             c.send(msg)
-        except Exception, e:
+        except Exception as e:
             try:
                 c.send(('#TRACEBACK', format_exc()))
             except Exception:
@@ -225,7 +225,7 @@ class Server(object):
 
                 try:
                     res = function(*args, **kwds)
-                except Exception, e:
+                except Exception as e:
                     msg = ('#ERROR', e)
                 else:
                     typeid = gettypeid and gettypeid.get(methodname, None)
@@ -260,9 +260,9 @@ class Server(object):
             try:
                 try:
                     send(msg)
-                except Exception, e:
+                except Exception as e:
                     send(('#UNSERIALIZABLE', repr(msg)))
-            except Exception, e:
+            except Exception as e:
                 util.info('exception in thread serving %r',
                         threading.current_thread().name)
                 util.info(' ... message was %r', msg)
@@ -295,7 +295,7 @@ class Server(object):
         self.mutex.acquire()
         try:
             result = []
-            keys = self.id_to_obj.keys()
+            keys = list(self.id_to_obj.keys())
             keys.sort()
             for ident in keys:
                 if ident != 0:
@@ -620,7 +620,7 @@ class BaseManager(object):
                            getattr(proxytype, '_method_to_typeid_', None)
 
         if method_to_typeid:
-            for key, value in method_to_typeid.items():
+            for key, value in list(method_to_typeid.items()):
                 assert type(key) is str, '%r is not a string' % key
                 assert type(value) is str, '%r is not a string' % value
 
@@ -772,7 +772,7 @@ class BaseProxy(object):
                 util.debug('DECREF %r', token.id)
                 conn = _Client(token.address, authkey=authkey)
                 dispatch(conn, None, 'decref', (token.id,))
-            except Exception, e:
+            except Exception as e:
                 util.debug('... decref failed %s', e)
 
         else:
@@ -790,7 +790,7 @@ class BaseProxy(object):
         self._manager = None
         try:
             self._incref()
-        except Exception, e:
+        except Exception as e:
             # the proxy may just be for a manager which has shutdown
             util.info('incref failed: %s' % e)
 
@@ -861,8 +861,8 @@ def MakeProxyType(name, exposed, _cache={}):
     dic = {}
 
     for meth in exposed:
-        exec '''def %s(self, *args, **kwds):
-        return self._callmethod(%r, args, kwds)''' % (meth, meth) in dic
+        exec('''def %s(self, *args, **kwds):
+        return self._callmethod(%r, args, kwds)''' % (meth, meth), dic)
 
     ProxyType = type(name, (BaseProxy,), dic)
     ProxyType._exposed_ = exposed
@@ -903,7 +903,7 @@ class Namespace(object):
     def __init__(self, **kwds):
         self.__dict__.update(kwds)
     def __repr__(self):
-        items = self.__dict__.items()
+        items = list(self.__dict__.items())
         temp = []
         for name, value in items:
             if not name.startswith('_'):
@@ -1062,8 +1062,8 @@ class SyncManager(BaseManager):
     this class.
     '''
 
-SyncManager.register('Queue', Queue.Queue)
-SyncManager.register('JoinableQueue', Queue.Queue)
+SyncManager.register('Queue', queue.Queue)
+SyncManager.register('JoinableQueue', queue.Queue)
 SyncManager.register('Event', threading.Event, EventProxy)
 SyncManager.register('Lock', threading.Lock, AcquirerProxy)
 SyncManager.register('RLock', threading.RLock, AcquirerProxy)

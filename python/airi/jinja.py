@@ -52,9 +52,9 @@ class Main(Resource):
                             "enable_pincode", "pincode", "new-device"]:
                 if k in args:
                     args.pop(k)
-            for k in args.keys():
+            for k in list(args.keys()):
                 args[k]=args[k][0]
-            print "saving camera", args
+            print("saving camera", args)
             settings.setCamera(args)
             settings.save()
 
@@ -66,7 +66,7 @@ class Main(Resource):
             out = {}
             try:
                 out.update(CameraFactory.getCamera(address))
-            except UnknownDevice, err:
+            except UnknownDevice as err:
                 out["address"] = address
                 out["name"] = resolve_name(address)
                 out["new_device"] = True
@@ -101,7 +101,7 @@ class Main(Resource):
                 }
             log.msg(out)
             return out
-        except Exception, err:
+        except Exception as err:
             log.err(err)
             return {"error": str(err)}
 
@@ -167,7 +167,7 @@ def service():
     from airi.api import API
     MEDIA = pkg_resources.resource_filename("airi", "/media")
     FAVICON = pkg_resources.resource_filename("airi", "/media/favicon.ico")
-    print "serving static content from", MEDIA
+    print("serving static content from", MEDIA)
 
     root = Main()
     path = os.path.dirname(os.path.realpath(__file__))

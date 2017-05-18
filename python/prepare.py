@@ -5,7 +5,7 @@ This script will download all the required packages (js and css mostly) so you
 can build properly the AIRi package.
 '''
 
-import urllib, os, os.path, zipfile
+import urllib.request, urllib.parse, urllib.error, os, os.path, zipfile
 
 os.system("mkdir -p deps")
 
@@ -87,7 +87,7 @@ def main():
 	if not os.path.isfile(DEPS[pack]['filename']):
 	    download(pack)
 	else:
-	    print DEPS[pack]['filename'], "found"
+	    print(DEPS[pack]['filename'], "found")
 
     uncompressJQueryMobile()
 

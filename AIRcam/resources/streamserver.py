@@ -16,7 +16,7 @@ class StreamServer():
 	self.droid = droid
 
     def killChildrens(self):
-        for client in self.clientsockets.itervalues():
+        for client in self.clientsockets.values():
             client.close()
         self.clientsockets.clear()
     
@@ -51,7 +51,7 @@ class StreamServer():
     		    s.sendall(text)
     		    s.sendall('\r\n')
     		    break
-    		except sk.error, err:
+    		except sk.error as err:
     	    	    if err[0] not in (errno.EWOULDBLOCK, errno.EAGAIN):
         		self.log("%s:%s got disconnected" % client)
     			self.log(str(err))
@@ -67,7 +67,7 @@ class StreamServer():
       conn.setblocking(2)
       try:
         request = conn.recv(4096)
-      except Exception, err:
+      except Exception as err:
         self.log(str(e))
         conn.close()
         return True
@@ -112,7 +112,7 @@ class StreamServer():
             conn, remote = self.socket.accept()
             self.log("accepted")
             self.handle_connection(conn, remote)
-        except sk.error, e:
+        except sk.error as e:
             #logger.error(e)
             if e[0] not in (errno.EWOULDBLOCK, errno.EAGAIN):
         	self.log(str(e))

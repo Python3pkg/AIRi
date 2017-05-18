@@ -24,7 +24,7 @@ class FSM():
     IDLE, \
     STREAM, \
     ERROR, \
-    COMMAND_MODE = range(8)
+    COMMAND_MODE = list(range(8))
 
 COMMAND_LINE="$GENIESYS%04X\r\n"
 CAPTURE_SIZE=re.compile("\$SZE\s*(?P<size>\d+)")
@@ -67,7 +67,7 @@ def find_jpeg(buffer):
 def isascii(buffer):
     try:
         buffer.decode('ascii')
-        print "ascii"
+        print("ascii")
         return True
     except:
         return False
@@ -104,9 +104,9 @@ class Camera(asyncore.dispatcher):
         logger.info("handle_connect")
         self.state = FSM.WELCOME
         try:
-            print self.recv(4096)
-        except Exception, err:
-            print err
+            print(self.recv(4096))
+        except Exception as err:
+            print(err)
         logger.info("connect done")
         
     def handle_read(self):

@@ -4,8 +4,8 @@ import airi.twisted_bluetooth as twisted_bluetooth
 from twisted.python import log
 from airi.camera import dbg, Listener, UnknownDevice
 from twisted.internet import reactor
-import optieyes
-import airicamera
+from . import optieyes
+from . import airicamera
 from functools import partial
 from airi.settings import getSettings
 from airi import report
@@ -59,7 +59,7 @@ class Camera(Protocol):
                 welcome, self.buffer = self.buffer.split('\n', 1)
                 dbg("welcome", welcome)
                 welcome = welcome.strip().lower().strip('\x00')
-                for k, v in WELCOME.iteritems():
+                for k, v in WELCOME.items():
                     if welcome.find(v) > -1:
                         return k
 
@@ -241,7 +241,7 @@ class CameraFactory(ClientFactory):
             try:
                 klass.clients[address].client.disconnect()
                 klass.clients[address].transport.loseConnection()
-            except Exception, err:
+            except Exception as err:
                 log.msg("call to disconnect failed")
                 log.err(err)
         if address in klass.listeners:
@@ -304,7 +304,7 @@ class CameraFactory(ClientFactory):
 
     @classmethod
     def getTypes(klass):
-        return TYPES.keys()
+        return list(TYPES.keys())
 
 
 if __name__ == '__main__':
@@ -316,11 +316,11 @@ if __name__ == '__main__':
             return False
 
         def gotFrame(self, frame, *a, **kw):
-            print "got frame %s bytes long" % len(frame)
+            print("got frame %s bytes long" % len(frame))
             CameraFactory.disconnect(sys.argv[1])
 
     if len(sys.argv) != 3:
-        print "Usage %s <target> <channel>" % sys.argv[0]
+        print("Usage %s <target> <channel>" % sys.argv[0])
         sys.exit(1)
 
     log.startLogging(sys.stdout)

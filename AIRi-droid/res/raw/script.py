@@ -32,7 +32,7 @@ class stdout():
         return getattr(self.stdout, name)
 
 def createSymbolicLinks(files):
-    print "createSymbolicLinks"
+    print("createSymbolicLinks")
     libs=os.path.join(path.dirname(parent), "lib")
     A=open(os.path.join(parent, "filelist.txt"), "r")
     for l in A.readlines():
@@ -40,14 +40,14 @@ def createSymbolicLinks(files):
             continue
         src,dest=l.split()
         src,dest=[os.path.join(libs, src), os.path.join(files, dest)]
-        print dest, "->", src,
+        print(dest, "->", src, end=' ')
         if os.path.islink(dest):
-            print "skipped"
+            print("skipped")
             continue
         if os.path.exists(dest):
             os.remove(dest)
         os.symlink(src, dest)
-        print "created"
+        print("created")
 
 out = stdout()
 sys.stdout = out
@@ -68,7 +68,7 @@ try:
     from airidroid import main
     main()
 
-except Exception, err:
+except Exception as err:
     import traceback
     droid.makeToast(str(err))
     droid.log(str(err))

@@ -43,7 +43,7 @@ def callback(frame):
 	global server, init, record_buffer, ff
 	server.send_to_all(frame, mimetype="image/jpeg")
 	ff.push_frame(frame)
-    except Exception,err:
+    except Exception as err:
 	droid.log("%s" % err)
 
 def error(*args, **kwargs):

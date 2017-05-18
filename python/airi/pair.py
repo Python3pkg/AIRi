@@ -13,7 +13,7 @@ DBusGMainLoop(set_as_default=True)
 
 PATH="/net/aircable/pairing"
 
-from settings import getSettings
+from .settings import getSettings
 settings=getSettings()
 
 def getPIN(address, dongle):
@@ -33,7 +33,7 @@ def registerAgent(bus, path):
         adapter.RegisterAgent(PATH, "KeyboardOnly")
         Agent.listeners.append(path)
         log.msg("adapter registered for path %s" % path)
-    except DBusException, err:
+    except DBusException as err:
         if "org.bluez.Error.AlreadyExists" == err.get_dbus_name():
             log.msg("Can't register pairing agent for %s" % path)
             Agent.bus_non_available=True
@@ -170,7 +170,7 @@ def initAgent(bus):
                 f=False
         if f:
             log.msg("Agent registered on all paths")
-    except Exception, err:
+    except Exception as err:
         log.err("Something went wrong on the agent application")
         log.err(err)
 
@@ -180,8 +180,8 @@ def main():
         manager = dbus.Interface(bus.get_object("org.bluez", "/"),
                 "org.bluez.Manager")
         log.msg("Using session bus")
-    except Exception, err:
-        print err
+    except Exception as err:
+        print(err)
         bus = dbus.SystemBus()
         log.msg("Using system bus")
     registerControlSignals(bus)

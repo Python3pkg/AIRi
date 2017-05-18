@@ -16,7 +16,7 @@ SIZES={
 }
 
 CAPABILITIES={ 
-    'size':             SIZES.keys(),
+    'size':             list(SIZES.keys()),
     'pan':              [],
     'flash':            False,
     'voice':            False,

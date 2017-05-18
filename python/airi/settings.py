@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import ConfigParser
+import configparser
 from os import path, access, W_OK, environ
 from twisted.python import log
 import logging, sys, os
@@ -18,7 +18,7 @@ def resolvehome():
     paths = [ path.expanduser("~") ]
     for i in ["HOME", "HOMEPATH", "DATA_PATH"]:
         if i in os.environ:
-            print "Has", i
+            print("Has", i)
             paths.append(os.environ[i])
     for i in paths:
         if access(i, W_OK):
@@ -32,7 +32,7 @@ class Settings():
             parent = resolvehome()
             if not parent:
                 if access(path.dirname(path.realpath(__file__)), W_OK):
-                    print "Using path.realpath"
+                    print("Using path.realpath")
                     parent = path.dirname(path.realpath(__file__))
                 else:
                     raise RuntimeException("Can't find suitable path to store settings")
@@ -40,19 +40,19 @@ class Settings():
                 name=path.join(parent, ".AIRi")
             else:
                 name=path.join(parent, "AIRi.cfg")
-        print "configuration file", name
+        print("configuration file", name)
         self.name = name
         self.reload()
 
 
     def reload(self):
-        self.config = ConfigParser.SafeConfigParser()
+        self.config = configparser.SafeConfigParser()
         for section in DEFAULTS:
             if self._has_section(section):
                 continue;
 
             self._add_section(section)
-            for key, value in DEFAULTS[section].iteritems():
+            for key, value in DEFAULTS[section].items():
                 self._set(section, key, str(value))
 
         if path.exists(self.name) and path.isfile(self.name):
@@ -116,7 +116,7 @@ class Settings():
         try:
             out["pincode"] = self.getPIN(out["address"], perfect=True, silent=False)
             out["enable_pincode"] = True
-        except Exception, err:
+        except Exception as err:
             out["enable_pincode"] = False
         if "type" not in out:
             return None
@@ -173,7 +173,7 @@ class Settings():
 
         section = self.getCameraSection(configuration["address"], True)
 
-        for key, value in configuration.iteritems():
+        for key, value in configuration.items():
             self.setCameraSetting(configuration["address"], key, value, section=section)
         self.save()
         from airi.api import UpdateManager

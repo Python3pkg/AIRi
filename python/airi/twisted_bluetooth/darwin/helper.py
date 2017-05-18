@@ -26,21 +26,21 @@ def main():
         while True:
             if pipe.poll():
                 b = pipe.recv()
-                print "sending", b
+                print("sending", b)
                 s.send(b)
             try:
                 o = s.recv(4096)
                 pipe.send(o)
-            except Exception, err:
+            except Exception as err:
                 pass
 
-    except Exception, err:
+    except Exception as err:
         pipe.send(err)
         raise
 
 if __name__=='__main__':
     if len(sys.argv) < 2:
-        print "Usage %s <socket>" % sys.argv[0]
+        print("Usage %s <socket>" % sys.argv[0])
         sys.exit(1)
     main()
 

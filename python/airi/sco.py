@@ -16,7 +16,7 @@ from airi.camera.protocol import CameraFactory
 from airi.camera import Listener
 from airi import report, RESULT
 from functools import partial
-import twisted_bluetooth
+from . import twisted_bluetooth
 
 HTTP_DISCONNECT_TIMEOUT = 10
 CATEGORY = "AIRi-SCO"
@@ -104,12 +104,12 @@ class SCOResource(Resource, Listener):
     @report(category=CATEGORY)
     def lostConnection(self, client):
         '''Called when the Bluetooth Link is lost'''
-        print "SCOResource.lostConnection", client.address
+        print("SCOResource.lostConnection", client.address)
         clients = SCOStream.getClients(client.address)
         for c in clients:
             try:
                 c.request.finish()
-            except Exception, err:
+            except Exception as err:
                 log.err(err)
             SCOStream.clients.remove(c)
 

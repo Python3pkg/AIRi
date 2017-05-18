@@ -59,7 +59,7 @@ class BluetoothBaseClient(tcp.Connection):
         if self.proto not in [ None, bluetooth.RFCOMM, bluetooth.L2CAP ]:
             raise RuntimeException("I only handle bluetooth sockets")
         
-        print self.proto, type(self.proto)
+        print(self.proto, type(self.proto))
         s = bluetooth.BluetoothSocket(self.proto)
         s.setblocking(0)
         tcp.fdesc._setCloseOnExec(s.fileno())
@@ -67,7 +67,7 @@ class BluetoothBaseClient(tcp.Connection):
 
     def resolveAddress(self):
         self.realAddress = self.addr
-        print "resolveAddress", self.realAddress
+        print("resolveAddress", self.realAddress)
         self.doConnect()
 
     def doConnect(self):
@@ -84,9 +84,9 @@ class BluetoothBaseClient(tcp.Connection):
             self.socket.setblocking(True)
             connectResult = self.socket.connect(self.realAddress)
             self.socket.setblocking(False)
-        except socket.error, se:
+        except socket.error as se:
             connectResult = se.args[0]
-            print "connectResult", connectResult
+            print("connectResult", connectResult)
             if connectResult:
                 if connectResult == EISCONN:
                     pass
@@ -120,7 +120,7 @@ class BluetoothBaseClient(tcp.Connection):
         """
         try:
             data = self.socket.recv(self.bufferSize)
-        except (bluetooth.btcommon.BluetoothError, socket.error), se:
+        except (bluetooth.btcommon.BluetoothError, socket.error) as se:
             if se.args[0] == EWOULDBLOCK:
                 return
             else:
@@ -202,7 +202,8 @@ class Port(tcp.Port):
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         return s
 
-    def _buildAddr(self, (host, port)):
+    def _buildAddr(self, xxx_todo_changeme):
+        (host, port) = xxx_todo_changeme
         return (host, port)
 
     def getHost(self):

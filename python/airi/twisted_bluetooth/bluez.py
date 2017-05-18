@@ -27,6 +27,7 @@ from twisted.python import log
 
 from bluetooth import *
 import bluetooth._bluetooth as bt
+import collections
 
 SPP_UUID="00001101-0000-1000-8000-00805F9B34FB"
 if __name__=='__main__':
@@ -55,7 +56,7 @@ def initalizeDBus():
                 "org.bluez.Manager")
         log.msg("DBus available")
         flag = True
-    except Exception, err:
+    except Exception as err:
         log.msg("DBus unavailable")
         log.error(err)
         if isAndroid(): flag = True
@@ -77,7 +78,7 @@ def androidIsBonded(address):
         global droid
         r = droid.bluetoothIsBonded(address)
         return r
-    except Exception, err:
+    except Exception as err:
         log.err(err)
     return False
 
@@ -89,7 +90,7 @@ def bluezIsBonded(address):
         manager.DefaultAdapter()), "org.bluez.Adapter")
     try:
         dev = adapter.FindDevice(address)
-    except Exception, err:
+    except Exception as err:
         return False
     dev = dbus.Interface(bus.get_object("org.bluez",dev),
             "org.bluez.Device")
@@ -105,7 +106,7 @@ def androidBondDevice(address):
     s = settings.getSettings()
     pincode = s.getPIN(address)
     ret = droid.bluetoothPair(address, pincode)
-    print ret
+    print(ret)
 
 def bluezBondDevice(address):
     initalizeDBus()
@@ -159,16 +160,16 @@ class BluetoothBaseClient(tcp.Connection):
         """
         def internal_shutdown(self, flag):
             try:
-                print "internal_shutdown", self, flag
+                print("internal_shutdown", self, flag)
                 bluetooth.BluetoothSocket.shutdown(self, flag)
-            except btcommon.BluetoothError, err:
+            except btcommon.BluetoothError as err:
                 raise socket.error(err.errno, err.message)
 
         if self.proto not in [ None, bluetooth.RFCOMM, bluetooth.SCO, 
                 bluetooth.HCI, bluetooth.L2CAP ]:
             raise RuntimeException("I only handle bluetooth sockets")
 
-        print self.proto, type(self.proto)
+        print(self.proto, type(self.proto))
         s = bluetooth.BluetoothSocket(self.proto)
         s.setblocking(0)
         s.shutdown = partial(internal_shutdown, s)
@@ -177,7 +178,7 @@ class BluetoothBaseClient(tcp.Connection):
     
     def resolveAddress(self):
         self.realAddress = self.addr
-        print "resolveAddress", self.realAddress
+        print("resolveAddress", self.realAddress)
         self.doConnect()
 
     def doConnect(self):
@@ -204,9 +205,9 @@ class BluetoothBaseClient(tcp.Connection):
         # cleaned up some day, though.
         try:
             connectResult = self.socket.connect_ex(self.realAddress)
-        except socket.error, se:
+        except socket.error as se:
             connectResult = se.args[0]
-        print "connectResult", connectResult
+        print("connectResult", connectResult)
         if connectResult:
             if connectResult == EISCONN or connectResult == EBADFD:
                 pass 
@@ -238,7 +239,7 @@ class BluetoothBaseClient(tcp.Connection):
         """
         try:
             data = self.socket.recv(self.bufferSize)
-        except (bluetooth.btcommon.BluetoothError, socket.error), se:
+        except (bluetooth.btcommon.BluetoothError, socket.error) as se:
             if se.args[0] == EWOULDBLOCK:
                 return
             else:
@@ -323,7 +324,8 @@ class Port(tcp.Port):
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         return s
 
-    def _buildAddr(self, (host, port)):
+    def _buildAddr(self, xxx_todo_changeme):
+        (host, port) = xxx_todo_changeme
         return (host, port)
 
     def getHost(self):
@@ -379,7 +381,7 @@ def setupSCO():
     return acl_mtu, sco_mtu, acl_nbufs, sco_nbufs
 try:
     acl_mtu, sco_mtu, acl_nbufs, sco_nbufs = setupSCO()
-except Exception, err:
+except Exception as err:
     log.err(err)
     acl_mtu, sco_mtu, acl_nbufs, sco_nbufs = (None, None, None, None)
 
@@ -418,7 +420,7 @@ class SCOReader(object):
         self.sock = bluetooth.BluetoothSocket(bluetooth.SCO)
         try:
             self.sock.connect((target,))
-        except Exception, err:
+        except Exception as err:
             log.error("Failed while trying to connect SCO")
             log.error(err)
             return
@@ -450,10 +452,10 @@ class SCOReader(object):
         return "SCO-Reader"
 
     def connectionLost(self, reason):
-        if callable(self._connectionLost):
+        if isinstance(self._connectionLost, collections.Callable):
             try:
                 self._connectionLost(self)
-            except Exception, err:
+            except Exception as err:
                 log.error(err)
         if self.address.lower() in SCOReader.clients:
             del SCOReader.clients[self.address.lower()]
@@ -469,9 +471,9 @@ if __name__=='__main__':
         initalizeDBus()
         global dbus, bus, manager
         agent = pair.Agent(bus, pair.PATH)
-        print isBonded(address)
-        print bondDevice(address)
-        print isBonded(address)
+        print(isBonded(address))
+        print(bondDevice(address))
+        print(isBonded(address))
         reactor.stop()
     from twisted.internet import reactor
     reactor.callWhenRunning(main)

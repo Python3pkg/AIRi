@@ -18,13 +18,13 @@ def browser_ready():
 
 def startbrowser():
     import webbrowser
-    print "Starting up browser"
+    print("Starting up browser")
     webbrowser.open("http://localhost:8000")
 
 def main():
     import sys
     if sys.platform == "linux2":
-        from pair import main
+        from .pair import main
         reactor.callWhenRunning(main)
     log.startLogging(sys.stdout)
     nobrowser = "--nobrowser" in sys.argv
